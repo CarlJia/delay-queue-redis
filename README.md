@@ -1,9 +1,21 @@
 ## delay-queue-redis
-基于redis缓存的延迟队列，内部依赖redis的数据结构实现。
+基于redis缓存的延迟队列，内部依赖redis的数据结构(```hash zset```)实现。
 通过简单的引入jar包可方便的接入。<br/>
 目前支持原生的redis和jimDB(需要开启hashtag)。
 
-#### 1. SpringApplication启动类头部添加```@EnabledDelayQueue``` 开启延迟队列支持
+## 原理
+## 注意事项
+适合小场景的延迟，最小延迟1S，最大延迟7天。数据容灾完全依赖底层的redis集群主从。
+## 概要
+具体样例请参考module```delay-queue-redis-spring-boot-starter-demo```，共四个步骤：
+- 引用jar包 delay-queue-redis-[jimdb|data]-spring-boot-starter
+- 启动函数添加```@EnabledDelayQueue```
+- 增加application.properties相关配置，形如：生产者、消费者、topic等，大部分保持默认即可。比较重要的是```delay.queue.topics```配置。
+- 增加topics对应的消费者，记得把消费者的handler名称配置到```delay.queue.topics```即可。
+
+## 详情
+### 1. 启动类添加注解，开启延迟队列
+SpringApplication启动类头部添加```@EnabledDelayQueue``` 开启延迟队列支持
 ```java
 @SpringBootApplication
 @EnabledDelayQueue
@@ -13,7 +25,8 @@ public class DelayQueueRedisApplication {
     }
 }
 ```
-#### 2.1 原生redis接入方式，application.properties中添加如下内容
+### 2. application.properties添加配置
+### 2.1. spring-data-redis接入方式
 ```properties
 ## redis相关配置
 spring.redis.host=127.0.0.1
@@ -52,7 +65,7 @@ delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSk
 #delay.queue.topics.inviterEventNotify.retry-interval=5000
 ```
 
-#### 2.2 jimDB接入方式,application.properties中新增如下内容
+#### 2.2 jimDB接入方式
 ```properties
 ## 延迟队列服务配置
 delay.queue.appName=inviter-activity
@@ -89,7 +102,8 @@ delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSk
     </bean>
 ```
 
-#### 3. 新增消息消费者，只要实现接口```DelayQueueConsumerHandler```即可。
+### 3. 消息消费者
+实现接口```DelayQueueConsumerHandler```，消费异常不在这个地方处理，有专门的异常处理类
 ```java
 public class DelayQueueConsumerSkipHandler implements DelayQueueConsumerHandler {
     private static final Logger logger = LoggerFactory.getLogger(DelayQueueConsumerSkipHandler.class);
@@ -100,36 +114,29 @@ public class DelayQueueConsumerSkipHandler implements DelayQueueConsumerHandler 
     }
 }
 ```
-#### 3.1 消费失败重试
-默认实现类是 ```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionReentrantHandler```
-也可以自定义实现```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionHandler```
+### 4. 消费失败重试
+默认实现类是 ```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionReentrantHandler```，原理是拿到失败的消息后，二次投递到topic中，默认重试次数是3次，可以通过```delay.queue.topics.xxx.max-retry```自定义重试次数。<br/>
 
-#### 4. application.properties中针对设置的topic配置
-handlerName为实现类的SimpleName的驼峰格式。
-*消费异常有默认的实现*
-```properties
-## 抽象出来的topic主题配置，可以配置多个topic
-delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSkipHandler
-delay.queue.topics.inviterEventNotify.consumer-exception-handler-name=delayQueueConsumerExceptionReentrantHandler
-```
-#### 3. 新增消息消费者，只要实现接口```DelayQueueConsumerHandler```即可。
+也可以实现```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionHandler```,配置在```delay.queue.topics.xx.consumer-exception-handler-name```中。
+
+### 5. 延迟消息发送
 ```java
-public class DelayQueueConsumerSkipHandler implements DelayQueueConsumerHandler {
-    private static final Logger logger = LoggerFactory.getLogger(DelayQueueConsumerSkipHandler.class);
+@RestController
+public class DemoController {
 
-    @Override
-    public void onMessage(DelayMessage delayMessage) {
-        logger.info("消息消费：跳过处理 {}", Jsons.toJson(delayMessage));
+    private final DelayMessageProducer delayMessageProducer;
+
+    public DemoController(DelayMessageProducer delayMessageProducer) {
+        this.delayMessageProducer = delayMessageProducer;
+    }
+
+
+    @PostMapping("/delayMessage/send")
+    public Object send(@RequestBody InviterEventNotifyMessage message,
+            @RequestParam("topic") String topic,
+            @RequestParam("delaySeconds") int delaySeconds) {
+        return delayMessageProducer.send(
+                new DelayMessage(topic, message, Duration.ofSeconds(delaySeconds)));
     }
 }
-```
-#### 3.1 消费失败重试，默认实现类是 ```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionReentrantHandler```
-也可以自定义实现```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionHandler```
-
-#### 4. application.properties中针对设置的topic配置如下内容即可，handlerName为实现类的SimpleName的驼峰格式。
-*消费异常有默认的实现*
-```properties
-## 抽象出来的topic主题配置，可以配置多个topic
-delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSkipHandler
-delay.queue.topics.inviterEventNotify.consumer-exception-handler-name=delayQueueConsumerExceptionReentrantHandler
 ```

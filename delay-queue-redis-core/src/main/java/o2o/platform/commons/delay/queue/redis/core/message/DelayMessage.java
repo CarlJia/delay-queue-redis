@@ -43,7 +43,7 @@ public class DelayMessage {
         this.alreadyRetryTimes = 0;
     }
 
-    public DelayMessage(String topic, Duration delay, Object payload) {
+    public DelayMessage(String topic, Object payload, Duration delay) {
         this();
         this.topic = topic;
         this.payload = payload;

@@ -46,7 +46,7 @@ public class DelayQueueConsumerExceptionRetryHandler implements DelayQueueConsum
         while (alreadyRetryTimes < maxRetry && !retryResult) {
             try {
                 delayMessage.setAlreadyRetryTimes(++alreadyRetryTimes);
-                delayMessage.setDelay(Duration.ofMillis(10L).toMillis()); //设置10毫秒，避免消息发送拦截
+                delayMessage.setDelay(Duration.ofMillis(50L).toMillis()); //设置50毫秒，避免消息发送拦截
                 SendResult sendResult = delayMessageProducer.send(delayMessage);
                 logger.info("message retry result, sendResult={}, message={}", sendResult, delayMessage);
                 retryResult = sendResult.getResultStatus() == ResultStatus.SEND_SUCCESS;

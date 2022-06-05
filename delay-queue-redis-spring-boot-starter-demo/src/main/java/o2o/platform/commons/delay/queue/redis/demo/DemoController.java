@@ -2,7 +2,6 @@ package o2o.platform.commons.delay.queue.redis.demo;
 
 import java.time.Duration;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,8 +17,11 @@ import o2o.platform.commons.delay.queue.redis.core.service.DelayMessageProducer;
 @RestController
 public class DemoController {
 
-    @Autowired
-    private DelayMessageProducer delayMessageProducer;
+    private final DelayMessageProducer delayMessageProducer;
+
+    public DemoController(DelayMessageProducer delayMessageProducer) {
+        this.delayMessageProducer = delayMessageProducer;
+    }
 
 
     @PostMapping("/delayMessage/send")
@@ -27,6 +29,6 @@ public class DemoController {
             @RequestParam("topic") String topic,
             @RequestParam("delaySeconds") int delaySeconds) {
         return delayMessageProducer.send(
-                new DelayMessage(topic, Duration.ofSeconds(delaySeconds), message));
+                new DelayMessage(topic, message, Duration.ofSeconds(delaySeconds)));
     }
 }
