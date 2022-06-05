@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  o2o.platform.commons.delay.queue.redis.jimdb.starter.DelayQueueRedisJimDBAutoConfiguration

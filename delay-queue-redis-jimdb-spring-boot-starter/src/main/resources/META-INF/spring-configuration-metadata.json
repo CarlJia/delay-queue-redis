@@ -1,0 +1,113 @@
+{
+  "groups": [
+    {
+      "name": "delay.queue",
+      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.data.starter.DelayQueueRedisAutoConfiguration",
+      "sourceMethod": "delayQueueProperties()"
+    },
+    {
+      "name": "delay.queue.executor",
+      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$executor",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.data.starter.DelayQueueRedisAutoConfiguration",
+      "sourceMethod": "consumerTaskExecutor()"
+    },
+    {
+      "name": "delay.queue.producer",
+      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$producer",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties",
+      "sourceMethod": "producer()"
+    },
+    {
+      "name": "delay.queue.consumer",
+      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties",
+      "sourceMethod": "consumer()"
+    }
+  ],
+  "properties": [
+    {
+      "name": "delay.queue.appName",
+      "type": "java.lang.String",
+      "description": "服务appName",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$appName",
+      "defaultValue": "appName"
+    },
+    {
+      "name": "delay.queue.executor.coreSize",
+      "type": "java.lang.Integer",
+      "description": "核心线程数",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$executor",
+      "defaultValue": 10
+    },
+    {
+      "name": "delay.queue.executor.maxSize",
+      "type": "java.lang.Integer",
+      "description": "最大线程数",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$executor",
+      "defaultValue": 10
+    },
+    {
+      "name": "delay.queue.executor.queueSize",
+      "type": "java.lang.Integer",
+      "description": "线程队列大小",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$executor",
+      "defaultValue": 5000
+    },
+    {
+      "name": "delay.queue.executor.threadNamePrefix",
+      "type": "java.lang.String",
+      "description": "线程名称前缀",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$executor",
+      "defaultValue": "delay-queue-consumer-worker-"
+    },
+    {
+      "name": "delay.queue.executor.shutdownAwaitTime",
+      "type": "java.time.Duration",
+      "description": "线程池关闭延迟时间",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$executor",
+      "defaultValue": "10s"
+    },
+    {
+      "name": "delay.queue.producer.enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否开启生产者",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$producer",
+      "defaultValue": true
+    },
+    {
+      "name": "delay.queue.consumer.enabled",
+      "type": "java.lang.Boolean",
+      "description": "是否开启消费者",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "defaultValue": true
+    },
+    {
+      "name": "delay.queue.consumer.initialDelay",
+      "type": "java.time.Duration",
+      "description": "服务初始化时候的延迟启动时间",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "defaultValue": "3s"
+    },
+    {
+      "name": "delay.queue.consumer.scanInterval",
+      "type": "java.time.Duration",
+      "description": "扫描间隔",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "defaultValue": "1s"
+    },
+    {
+      "name": "delay.queue.consumer.shutdownAwaitTime",
+      "type": "java.time.Duration",
+      "description": "服务关闭前等待的时间",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "defaultValue": "10s"
+    },
+    {
+      "name": "delay.queue.topics",
+      "type": "java.util.Map<java.lang.String, o2o.platform.commons.delay.queue.redis.core.properties.TopicProperties>",
+      "description": "业务topics列表",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.TopicProperties"
+    }
+  ]
+}
