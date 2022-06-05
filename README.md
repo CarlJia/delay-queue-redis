@@ -1,10 +1,9 @@
 ## delay-queue-redis
-
 基于redis缓存的延迟队列，内部依赖redis的数据结构实现。
 通过简单的引入jar包可方便的接入。<br/>
 目前支持原生的redis和jimDB(需要开启hashtag)。
 
-#### 1. SpringApplication启动类头部添加```@EnabledDelayQueue`` 开启延迟队列支持
+#### 1. SpringApplication启动类头部添加```@EnabledDelayQueue``` 开启延迟队列支持
 ```java
 @SpringBootApplication
 @EnabledDelayQueue
@@ -90,6 +89,29 @@ delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSk
     </bean>
 ```
 
+#### 3. 新增消息消费者，只要实现接口```DelayQueueConsumerHandler```即可。
+```java
+public class DelayQueueConsumerSkipHandler implements DelayQueueConsumerHandler {
+    private static final Logger logger = LoggerFactory.getLogger(DelayQueueConsumerSkipHandler.class);
+
+    @Override
+    public void onMessage(DelayMessage delayMessage) {
+        logger.info("消息消费：跳过处理 {}", Jsons.toJson(delayMessage));
+    }
+}
+```
+#### 3.1 消费失败重试
+默认实现类是 ```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionReentrantHandler```
+也可以自定义实现```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionHandler```
+
+#### 4. application.properties中针对设置的topic配置
+handlerName为实现类的SimpleName的驼峰格式。
+*消费异常有默认的实现*
+```properties
+## 抽象出来的topic主题配置，可以配置多个topic
+delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSkipHandler
+delay.queue.topics.inviterEventNotify.consumer-exception-handler-name=delayQueueConsumerExceptionReentrantHandler
+```
 #### 3. 新增消息消费者，只要实现接口```DelayQueueConsumerHandler```即可。
 ```java
 public class DelayQueueConsumerSkipHandler implements DelayQueueConsumerHandler {
