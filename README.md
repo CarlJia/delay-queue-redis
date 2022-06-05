@@ -89,3 +89,25 @@ delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSk
         <property name="jimUrl" value="${mvn.jimdb.url}"/>
     </bean>
 ```
+
+#### 3. 新增消息消费者，只要实现接口```DelayQueueConsumerHandler```即可。
+```java
+public class DelayQueueConsumerSkipHandler implements DelayQueueConsumerHandler {
+    private static final Logger logger = LoggerFactory.getLogger(DelayQueueConsumerSkipHandler.class);
+
+    @Override
+    public void onMessage(DelayMessage delayMessage) {
+        logger.info("消息消费：跳过处理 {}", Jsons.toJson(delayMessage));
+    }
+}
+```
+#### 3.1 消费失败重试，默认实现类是 ```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionReentrantHandler```
+也可以自定义实现```o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionHandler```
+
+#### 4. application.properties中针对设置的topic配置如下内容即可，handlerName为实现类的SimpleName的驼峰格式。
+*消费异常有默认的实现*
+```properties
+## 抽象出来的topic主题配置，可以配置多个topic
+delay.queue.topics.inviterEventNotify.consumer-handler-name=delayQueueConsumerSkipHandler
+delay.queue.topics.inviterEventNotify.consumer-exception-handler-name=delayQueueConsumerExceptionReentrantHandler
+```
