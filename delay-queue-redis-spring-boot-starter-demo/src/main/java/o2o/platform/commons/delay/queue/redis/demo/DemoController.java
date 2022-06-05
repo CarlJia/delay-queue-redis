@@ -10,14 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import o2o.platform.commons.delay.queue.redis.core.message.DelayMessage;
 import o2o.platform.commons.delay.queue.redis.core.service.DelayMessageProducer;
-import o2o.platform.commons.delay.queue.redis.data.starter.EnabledDelayQueue;
 
 /**
  * @author zhouyang01
  * Created on 2022-06-05
  */
 @RestController
-@EnabledDelayQueue
 public class DemoController {
 
     @Autowired
