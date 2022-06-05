@@ -13,7 +13,6 @@ public class ThreadPoolExecutorProperties {
     private int coreSize;
     private int maxSize;
     private int queueSize;
-
     private String threadNamePrefix;
     private Duration shutdownAwaitTime;
 
