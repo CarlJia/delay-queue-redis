@@ -34,14 +34,14 @@ delay.queue.executor.queueSize=100
 delay.queue.executor.threadNamePrefix=delay-queue-consumer-worker-
 delay.queue.executor.shutdownAwaitTime=10s
 
-## 发送端相关配置
-delay.queue.producer.enabled=true
+## 发送端相关配置 均有默认值
+delay.queue.p.enabled=true
 
-## 消费端相关配置
-delay.queue.consumer.enabled=true
-delay.queue.consumer.initialDelay=3s
-delay.queue.consumer.scanInterval=1s
-delay.queue.consumer.shutdownAwaitTime=10s
+## 消费端相关配置 均有默认值
+delay.queue.c.enabled=true
+delay.queue.c.initialDelay=3s
+delay.queue.c.scanInterval=1s
+delay.queue.c.shutdownAwaitTime=10s
 
 
 ## 抽象出来的topic主题配置，可以配置多个topic
@@ -63,14 +63,14 @@ delay.queue.executor.queueSize=100
 delay.queue.executor.threadNamePrefix=delay-queue-consumer-worker-
 delay.queue.executor.shutdownAwaitTime=10s
 
-## 发送端相关配置
-delay.queue.producer.enabled=true
+## 发送端相关配置 均有默认值
+delay.queue.p.enabled=true
 
-## 消费端相关配置
-delay.queue.consumer.enabled=true
-delay.queue.consumer.initialDelay=3s
-delay.queue.consumer.scanInterval=1s
-delay.queue.consumer.shutdownAwaitTime=10s
+## 消费端相关配置  均有默认值
+delay.queue.c.enabled=true
+delay.queue.c.initialDelay=3s
+delay.queue.c.scanInterval=1s
+delay.queue.c.shutdownAwaitTime=10s
 
 
 ## 抽象出来的topic主题配置，可以配置多个topic

@@ -13,14 +13,14 @@
       "sourceMethod": "consumerTaskExecutor()"
     },
     {
-      "name": "delay.queue.producer",
-      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$producer",
+      "name": "delay.queue.p",
+      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$p",
       "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties",
       "sourceMethod": "p()"
     },
     {
-      "name": "delay.queue.consumer",
-      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "name": "delay.queue.c",
+      "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$c",
       "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties",
       "sourceMethod": "c()"
     }
@@ -69,38 +69,38 @@
       "defaultValue": "10s"
     },
     {
-      "name": "delay.queue.producer.enabled",
+      "name": "delay.queue.p.enabled",
       "type": "java.lang.Boolean",
       "description": "是否开启生产者",
-      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$producer",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$p",
       "defaultValue": true
     },
     {
-      "name": "delay.queue.consumer.enabled",
+      "name": "delay.queue.c.enabled",
       "type": "java.lang.Boolean",
       "description": "是否开启消费者",
-      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$c",
       "defaultValue": true
     },
     {
-      "name": "delay.queue.consumer.initialDelay",
+      "name": "delay.queue.c.initialDelay",
       "type": "java.time.Duration",
       "description": "服务初始化时候的延迟启动时间",
-      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$c",
       "defaultValue": "3s"
     },
     {
-      "name": "delay.queue.consumer.scanInterval",
+      "name": "delay.queue.c.scanInterval",
       "type": "java.time.Duration",
       "description": "扫描间隔",
-      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$c",
       "defaultValue": "1s"
     },
     {
-      "name": "delay.queue.consumer.shutdownAwaitTime",
+      "name": "delay.queue.c.shutdownAwaitTime",
       "type": "java.time.Duration",
       "description": "服务关闭前等待的时间",
-      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
+      "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$c",
       "defaultValue": "10s"
     },
     {
