@@ -10,7 +10,7 @@ import o2o.platform.commons.delay.queue.redis.data.starter.EnabledDelayQueue;
  * Created on 2022-06-05
  */
 @SpringBootApplication
-@EnabledDelayQueue
+@EnabledDelayQueue //开启延迟队列功能
 public class DelayQueueRedisApplication {
     public static void main(String[] args) {
         SpringApplication.run(DelayQueueRedisApplication.class, args);

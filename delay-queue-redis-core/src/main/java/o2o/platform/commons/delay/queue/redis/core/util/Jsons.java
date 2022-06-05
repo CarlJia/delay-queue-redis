@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author zhouyang01
  * Created on 2022-06-05
  */
+@SuppressWarnings("unused")
 public class Jsons {
     private Jsons() {
     }

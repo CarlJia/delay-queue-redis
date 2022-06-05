@@ -11,7 +11,7 @@ import com.google.common.base.Strings;
  */
 public class RedisKeyResolver {
 
-    private String appName;
+    private final String appName;
 
     public String getAppName() {
         return appName;

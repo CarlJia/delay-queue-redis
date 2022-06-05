@@ -187,7 +187,7 @@ public class DelayQueueConsumer {
             processing.set(true);
             Duration shutdownAwaitTime = delayQueueProperties.getExecutor().getShutdownAwaitTime();
             boolean termination =
-                    MoreExecutors.shutdownAndAwaitTermination(scheduledExecutor, shutdownAwaitTime.getSeconds(),
+                    MoreExecutors.shutdownAndAwaitTermination(consumerThreadExecutor, shutdownAwaitTime.getSeconds(),
                             TimeUnit.SECONDS);
             logger.info("delay queue consumer is shutdown(consumerThreadExecutor), termination={}", termination);
         }
