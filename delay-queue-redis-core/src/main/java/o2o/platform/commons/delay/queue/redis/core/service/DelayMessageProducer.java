@@ -43,7 +43,7 @@ public class DelayMessageProducer {
     }
 
     public SendResult send(DelayMessage delayMessage) {
-        if (!delayQueueProperties.getProducer().isEnabled()) {
+        if (!delayQueueProperties.getP().isEnabled()) {
             return SendResult.failure(ResultStatus.SEND_ENABLE_CLOSED, "发送消息开关为关闭状态");
         }
         logger.info("send delay message, {}", delayMessage);

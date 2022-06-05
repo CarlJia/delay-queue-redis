@@ -16,13 +16,13 @@
       "name": "delay.queue.producer",
       "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$producer",
       "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties",
-      "sourceMethod": "producer()"
+      "sourceMethod": "p()"
     },
     {
       "name": "delay.queue.consumer",
       "type": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$consumer",
       "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties",
-      "sourceMethod": "consumer()"
+      "sourceMethod": "c()"
     }
   ],
   "properties": [

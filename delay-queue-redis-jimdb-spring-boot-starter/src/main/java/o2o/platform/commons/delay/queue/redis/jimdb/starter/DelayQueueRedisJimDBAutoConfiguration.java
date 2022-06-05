@@ -70,7 +70,7 @@ public class DelayQueueRedisJimDBAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public DelayMessageProducer producer(RedisOpService redisOpService, RedisKeyResolver redisKeyResolver,
+    public DelayMessageProducer p(RedisOpService redisOpService, RedisKeyResolver redisKeyResolver,
             DelayQueueProperties delayQueueProperties) {
         return new DelayMessageProducer(redisOpService, redisKeyResolver, delayQueueProperties);
     }
@@ -127,7 +127,7 @@ public class DelayQueueRedisJimDBAutoConfiguration {
 
     @Bean(initMethod = "start", destroyMethod = "shutdown")
     @ConditionalOnMissingBean
-    public DelayQueueConsumer consumer(RedisOpService redisOpService, RedisKeyResolver redisKeyResolver,
+    public DelayQueueConsumer c(RedisOpService redisOpService, RedisKeyResolver redisKeyResolver,
             DelayQueueProperties delayQueueProperties, ThreadPoolExecutor consumerThreadExecutor,
             DelayQueueConsumerProcessor delayQueueConsumerProcessor) {
         return new DelayQueueConsumer(redisOpService, redisKeyResolver, delayQueueProperties, consumerThreadExecutor,

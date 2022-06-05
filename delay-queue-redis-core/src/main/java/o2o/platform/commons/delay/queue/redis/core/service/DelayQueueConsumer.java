@@ -72,7 +72,7 @@ public class DelayQueueConsumer {
      * 开启服务
      */
     public void start() {
-        ConsumeProperties consumeProperties = Objects.requireNonNull(delayQueueProperties.getConsumer());
+        ConsumeProperties consumeProperties = Objects.requireNonNull(delayQueueProperties.getC());
         if (consumeProperties.isEnabled() && started.compareAndSet(false, true)) {
             if (scheduledExecutor == null) {
                 scheduledExecutor = new ScheduledThreadPoolExecutor(1,
@@ -177,7 +177,7 @@ public class DelayQueueConsumer {
         if (!scheduledExecutor.isShutdown()) {
             started.set(false);
             scheduledExecutor.shutdown();
-            long shutdownAwaitTime = delayQueueProperties.getConsumer().getShutdownAwaitTime().getSeconds();
+            long shutdownAwaitTime = delayQueueProperties.getC().getShutdownAwaitTime().getSeconds();
             boolean termination =
                     MoreExecutors.shutdownAndAwaitTermination(scheduledExecutor, shutdownAwaitTime, TimeUnit.SECONDS);
             logger.info("delay queue consumer is shutdown(scheduledExecutor), termination={}", termination);

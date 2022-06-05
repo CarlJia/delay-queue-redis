@@ -13,7 +13,7 @@ import lombok.Data;
 public class DelayQueueProperties {
     private String appName;
     private ThreadPoolExecutorProperties executor = new ThreadPoolExecutorProperties();
-    private ProduceProperties producer = new ProduceProperties();
-    private ConsumeProperties consumer = new ConsumeProperties();
+    private ProduceProperties p = new ProduceProperties();
+    private ConsumeProperties c = new ConsumeProperties();
     private Map<String, TopicProperties> topics = new HashMap<>();
 }
