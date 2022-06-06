@@ -22,7 +22,7 @@
 ├── delay-queue-redis-spring-boot-starter-demo    样例:基于deley-queue-redis-data-spring-boot-starter实现
 └── pom.xml
 ```
-具体样例请参考module```delay-queue-redis-spring-boot-starter-demo```，共四个步骤：
+具体样例请参考module```delay-queue-redis-spring-boot-starter-demo```
 ```xml
         <!--暂时未发正式版本-->
         <dependency>
@@ -34,9 +34,10 @@
 - 引用jar包 delay-queue-redis-[jimdb|data]-spring-boot-starter.jar。
 - 启动函数添加```@EnabledDelayQueue``` 开启delay-queue-redis的功能。
 - 增加application.properties相关配置，形如：生产者、消费者、topic等，大部分保持默认即可。比较重要的是```delay.queue.topics```
-  配置。
+  配置。 
 - 增加topics对应的消费者，记得把消费者的handler名称配置到```delay.queue.topics```即可。
 - 可以自定义异常消费，内部有默认的可重入实现。
+- 需要的地方添加延迟消息发送方法。
 
 ## 接入详情
 
@@ -174,3 +175,7 @@ public class DemoController {
     }
 }
 ```
+
+## 改进点
+- [ ] 添加监控接口，依据组件的差异在starter中编写不用的实现。
+- [ ] 实现第二版，基于rocksdb实现delay-server，以独立的进程运行，实现延迟服务的存储和转发两大特性。
