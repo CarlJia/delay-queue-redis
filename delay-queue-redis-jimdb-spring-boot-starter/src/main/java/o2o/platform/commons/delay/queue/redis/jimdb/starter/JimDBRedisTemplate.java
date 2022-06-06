@@ -1,12 +1,18 @@
 package o2o.platform.commons.delay.queue.redis.jimdb.starter;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.util.ReflectionUtils;
+
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.jd.jim.cli.Cluster;
+import com.jd.jim.cli.shard.KeyShardEncoder;
 
+import o2o.platform.commons.delay.queue.redis.core.redis.RedisLuaUtils;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisOpService;
 
 /**
@@ -20,6 +26,17 @@ public class JimDBRedisTemplate implements RedisOpService {
 
     public JimDBRedisTemplate(Cluster cluster) {
         this.cluster = cluster;
+        Preconditions.checkArgument(cluster != null, "构建jimDBCluster对象失败");
+        //服务启动的后，直接上传lua脚本至jimDB server
+        persistentSha = cluster.scriptLoad(RedisLuaUtils.getPersistentLuaContent());
+        fetchSha = cluster.scriptLoad(RedisLuaUtils.getFetchLuaContent());
+
+        //临时方案，直接把keyShardEncoder设置为支持hashtag
+        KeyShardEncoder shardEncoder = new KeyShardEncoder("UTF-8", true);
+        ReflectionUtils.findField(cluster.getClass(), "shardEncoder");
+        Field shardEncoderField = ReflectionUtils.findField(cluster.getClass(), "shardEncoder", KeyShardEncoder.class);
+        ReflectionUtils.makeAccessible(shardEncoderField);
+        ReflectionUtils.setField(shardEncoderField, cluster, shardEncoder);
     }
 
     @Override

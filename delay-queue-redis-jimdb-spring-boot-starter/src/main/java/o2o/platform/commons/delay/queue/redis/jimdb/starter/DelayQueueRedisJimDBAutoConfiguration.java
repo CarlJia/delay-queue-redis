@@ -47,7 +47,7 @@ public class DelayQueueRedisJimDBAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public RedisKeyResolver redisKeyResolver(DelayQueueProperties delayQueueProperties) {
-        return new RedisKeyResolver(delayQueueProperties.getAppName());
+        return new RedisKeyResolver(delayQueueProperties.getAppName(), delayQueueProperties.getEnv());
     }
 
     @Bean

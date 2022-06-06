@@ -12,14 +12,12 @@ import com.google.common.base.Strings;
 public class RedisKeyResolver {
 
     private final String appName;
+    private final String env;
 
-    public String getAppName() {
-        return appName;
-    }
-
-    public RedisKeyResolver(String appName) {
+    public RedisKeyResolver(String appName, String env) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(appName), "appName is null");
         this.appName = appName;
+        this.env = Strings.nullToEmpty(env);
     }
 
     /**
