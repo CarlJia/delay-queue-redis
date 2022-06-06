@@ -4,7 +4,7 @@
 内嵌在业务进程内执行， 目前支持原生的spring-data-redis和jimDB(均需要开启hashtag)。
 
 ## 原理
-- [ ] 缺一个流程图
+![概要流程图](https://github.com/glameyzhou/delay-queue-redis/raw/master/docs/delay-queue-redis.drawio.png)
 ## 注意事项
 
 - 比较适合小量级的延迟场景，形如：业务异常重试。
