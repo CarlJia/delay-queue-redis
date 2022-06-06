@@ -25,7 +25,7 @@ public class RedisKeyResolver {
      */
     public String hashKey(String topic) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(topic), "topic is null");
-        return String.format("delay.queue.hash.%s.{%s}", this.appName, topic);
+        return String.format("%s-%s-{%s}-delay-queue-hash", this.appName, this.env, topic);
     }
 
     /**
@@ -34,7 +34,7 @@ public class RedisKeyResolver {
     public String key(String topic, String key) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(topic), "topic is null");
         Preconditions.checkArgument(!Strings.isNullOrEmpty(key), "key is null");
-        return String.format("{%s}.%s", topic, key);
+        return String.format("%s-{%s}-%s", this.env, topic, key);
     }
 
     /**
@@ -42,6 +42,6 @@ public class RedisKeyResolver {
      */
     public String bucketKey(String topic) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(topic), "topic is null");
-        return String.format("delay.queue.bucket.%s.{%s}", this.appName, topic);
+        return String.format("%s-%s-{%s}-delay-queue-bucket", this.appName, this.env, topic);
     }
 }

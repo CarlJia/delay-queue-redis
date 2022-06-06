@@ -13,6 +13,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -21,7 +22,6 @@ import o2o.platform.commons.delay.queue.redis.core.message.DelayMessage;
 import o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisKeyResolver;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisOpService;
-import o2o.platform.commons.delay.queue.redis.core.util.Jsons;
 
 /**
  * 延迟消息生产
@@ -73,7 +73,7 @@ public class DelayMessageProducer {
         keys.add(redisKeyResolver.bucketKey(delayMessage.getTopic()));
 
         List<String> args = Lists.newArrayListWithCapacity(3);
-        args.add(Jsons.toJson(delayMessage));
+        args.add(JSON.toJSONString(delayMessage));
         args.add(String.valueOf(genDelayMessageScore(delayMessage.getDelay())));
         args.add(delayMessage.getMessageId());
         checkState(redisOpService.persist(getPersistentLuaContent(), keys, args.toArray(new String[0])),

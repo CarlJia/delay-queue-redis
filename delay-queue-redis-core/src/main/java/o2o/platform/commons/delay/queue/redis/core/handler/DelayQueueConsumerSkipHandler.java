@@ -3,8 +3,9 @@ package o2o.platform.commons.delay.queue.redis.core.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
+
 import o2o.platform.commons.delay.queue.redis.core.message.DelayMessage;
-import o2o.platform.commons.delay.queue.redis.core.util.Jsons;
 
 /**
  * @author zhouyang01
@@ -16,6 +17,6 @@ public class DelayQueueConsumerSkipHandler implements DelayQueueConsumerHandler 
 
     @Override
     public void onMessage(DelayMessage delayMessage) {
-        logger.info("消息消费：跳过处理 {}", Jsons.toJson(delayMessage));
+        logger.info("消息消费：跳过处理 {}", JSON.toJSONString(delayMessage));
     }
 }

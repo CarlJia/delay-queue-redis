@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -29,7 +30,6 @@ import o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperti
 import o2o.platform.commons.delay.queue.redis.core.properties.TopicProperties;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisKeyResolver;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisOpService;
-import o2o.platform.commons.delay.queue.redis.core.util.Jsons;
 
 /**
  * @author zhouyang01
@@ -169,7 +169,7 @@ public class DelayQueueConsumer {
             return null;
         }
         String message = messageList.get(0);
-        return Jsons.fromJson(message, DelayMessage.class);
+        return JSON.parseObject(message, DelayMessage.class);
     }
 
     @SuppressWarnings("UnstableApiUsage")

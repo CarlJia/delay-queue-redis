@@ -36,7 +36,7 @@ public class ConsumeProperties {
 
     public ConsumeProperties() {
         this.enabled = true;
-        this.initialDelay = Duration.ofSeconds(5);
+        this.initialDelay = Duration.ofSeconds(10);
         this.scanInterval = Duration.ofSeconds(1);
         this.shutdownAwaitTime = Duration.ofSeconds(10);
     }

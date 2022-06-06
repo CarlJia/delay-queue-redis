@@ -93,7 +93,7 @@
       "type": "java.time.Duration",
       "description": "消费者-服务初始化时候的延迟启动时间",
       "sourceType": "o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties$c",
-      "defaultValue": "3s"
+      "defaultValue": "10s"
     },
     {
       "name": "delay.queue.c.scanInterval",

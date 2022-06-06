@@ -27,11 +27,12 @@ public class JimDBRedisTemplate implements RedisOpService {
     public JimDBRedisTemplate(Cluster cluster) {
         this.cluster = cluster;
         Preconditions.checkArgument(cluster != null, "构建jimDBCluster对象失败");
+
         //服务启动的后，直接上传lua脚本至jimDB server
         persistentSha = cluster.scriptLoad(RedisLuaUtils.getPersistentLuaContent());
         fetchSha = cluster.scriptLoad(RedisLuaUtils.getFetchLuaContent());
 
-        //临时方案，直接把keyShardEncoder设置为支持hashtag
+        //临时方案，直接把keyShardEncoder设置为支持hashtag.只适合当前jimDB确实已经支持hashtag。同时jimDB客户端升级的时候需要关注下
         KeyShardEncoder shardEncoder = new KeyShardEncoder("UTF-8", true);
         ReflectionUtils.findField(cluster.getClass(), "shardEncoder");
         Field shardEncoderField = ReflectionUtils.findField(cluster.getClass(), "shardEncoder", KeyShardEncoder.class);
