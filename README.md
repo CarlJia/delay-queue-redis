@@ -13,7 +13,15 @@
 - 业务进程强杀，丢失最多**10条**数据(如果用户没有修改默认配置的话)。
 
 ## 概要
-
+```bash
+模块介绍
+├── README.md
+├── delay-queue-redis-core                        核心主流程
+├── delay-queue-redis-data-spring-boot-starter    基于spring-data-redis实现的spring-boot-starter
+├── delay-queue-redis-jimdb-spring-boot-starter   基于jimDB实现的spring-boot-starter
+├── delay-queue-redis-spring-boot-starter-demo    样例:基于deley-queue-redis-data-spring-boot-starter实现
+└── pom.xml
+```
 具体样例请参考module```delay-queue-redis-spring-boot-starter-demo```，共四个步骤：
 ```xml
         <!--暂时未发正式版本-->
