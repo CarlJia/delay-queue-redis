@@ -1,16 +1,12 @@
 package o2o.platform.commons.delay.queue.redis.jimdb.starter;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.util.ReflectionUtils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.jd.jim.cli.Cluster;
-import com.jd.jim.cli.shard.KeyShardEncoder;
 
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisLuaUtils;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisOpService;
@@ -33,11 +29,11 @@ public class JimDBRedisTemplate implements RedisOpService {
         fetchSha = cluster.scriptLoad(RedisLuaUtils.getFetchLuaContent());
 
         //临时方案，直接把keyShardEncoder设置为支持hashtag.只适合当前jimDB确实已经支持hashtag。同时jimDB客户端升级的时候需要关注下
-        KeyShardEncoder shardEncoder = new KeyShardEncoder("UTF-8", true);
+        /*KeyShardEncoder shardEncoder = new KeyShardEncoder("UTF-8", true);
         ReflectionUtils.findField(cluster.getClass(), "shardEncoder");
         Field shardEncoderField = ReflectionUtils.findField(cluster.getClass(), "shardEncoder", KeyShardEncoder.class);
         ReflectionUtils.makeAccessible(shardEncoderField);
-        ReflectionUtils.setField(shardEncoderField, cluster, shardEncoder);
+        ReflectionUtils.setField(shardEncoderField, cluster, shardEncoder);*/
     }
 
     @Override
@@ -49,6 +45,7 @@ public class JimDBRedisTemplate implements RedisOpService {
         return eval != null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<String> fetch(String luaContent, List<String> keys, String... args) {
         if (Strings.isNullOrEmpty(fetchSha)) {
