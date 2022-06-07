@@ -2,6 +2,9 @@ package o2o.platform.commons.delay.queue.redis.core.service;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.METRIC_CONSUMER;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.RET_FAIL;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.RET_FAIL_CONSUMER_INNER;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.RET_SUCCESS;
 import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.TAG_CONSUMER_GRAB;
 import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.TAG_CONSUMER_RETRY;
 import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.TAG_RESULT;
@@ -104,7 +107,6 @@ public class DelayQueueConsumer {
         shutdown0();
     }
 
-
     @SuppressWarnings("rawtypes")
     private void start0() {
         if (started.get() && !processing.getAndSet(true)) {
@@ -117,8 +119,16 @@ public class DelayQueueConsumer {
                 CompletableFuture[] completableFutures = topicMap.entrySet()
                         .stream()
                         .filter(entry -> entry.getValue().isEnabled())
-                        .map(entry -> CompletableFuture.runAsync(
-                                () -> processTopic(entry.getKey()), consumerThreadExecutor))
+                        .map(entry -> CompletableFuture.runAsync(() -> processTopic(entry.getKey()),
+                                        consumerThreadExecutor)
+                                // process topic error, record metric and log
+                                .exceptionally(throwable -> {
+                                    metricService.count(METRIC_CONSUMER, TAG_TOPIC, entry.getKey(), TAG_RESULT,
+                                            RET_FAIL_CONSUMER_INNER);
+                                    logger.error("topic={} consumer error ", entry.getKey(), throwable);
+                                    return null;
+                                }))
+                        .filter(Objects::nonNull)
                         .toArray(CompletableFuture[]::new);
                 CompletableFuture.allOf(completableFutures).join();
                 //当前批次处理完毕，设置处理中状态为false
@@ -154,24 +164,21 @@ public class DelayQueueConsumer {
 
     private void processMessage(String topic, String messageId) {
         DelayMessage delayMessage = fetchDelayMessage(topic, messageId);
-        if (delayMessage == null) {
-            return;
-        }
         Stopwatch stopwatch = Stopwatch.createStarted();
         try {
             consumeHandlerMap.get(delayQueueProperties.getTopics().get(topic).getConsumerHandlerName())
                     .onMessage(delayMessage);
 
-            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_RESULT, true);
+            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_RESULT, RET_SUCCESS);
         } catch (Exception e) {
-            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_RESULT, false);
+            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_RESULT, RET_FAIL);
+            //消费异常处理
             DelayQueueConsumerExceptionHandler exceptionHandler = consumeExceptionHandlerMap.get(
                     delayQueueProperties.getTopics().get(topic).getConsumerExceptionHandlerName());
-
             exceptionHandler.onException(delayMessage, e);
-
-            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_CONSUMER_RETRY,
-                    exceptionHandler.getClass().getSimpleName(), TAG_RESULT, true);
+            metricService.count(METRIC_CONSUMER, TAG_TOPIC, topic,
+                    TAG_CONSUMER_RETRY,
+                    exceptionHandler.getClass().getSimpleName(), TAG_RESULT, RET_SUCCESS);
         }
     }
 

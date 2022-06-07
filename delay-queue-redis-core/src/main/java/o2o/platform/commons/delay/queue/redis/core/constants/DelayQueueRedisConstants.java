@@ -16,4 +16,8 @@ public class DelayQueueRedisConstants {
     public static final String TAG_TOPIC = "topic";
     public static final String TAG_CONSUMER_GRAB = "grab";
     public static final String TAG_CONSUMER_RETRY = "retryHandler";
+
+    public static final String RET_SUCCESS = "success";
+    public static final String RET_FAIL = "failure";
+    public static final String RET_FAIL_CONSUMER_INNER = "innerError";
 }
