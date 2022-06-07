@@ -8,6 +8,7 @@ import o2o.platform.commons.delay.queue.redis.core.constants.ResultStatus;
  * @author zhouyang01
  * Created on 2022-06-04
  */
+@SuppressWarnings("unused")
 public class SendResult {
     private ResultStatus resultStatus;
     private String messageId;

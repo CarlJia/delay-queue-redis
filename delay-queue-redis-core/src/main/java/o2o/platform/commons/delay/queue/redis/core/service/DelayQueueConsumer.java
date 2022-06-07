@@ -1,5 +1,11 @@
 package o2o.platform.commons.delay.queue.redis.core.service;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.METRIC_CONSUMER;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.TAG_CONSUMER_GRAB;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.TAG_CONSUMER_RETRY;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.TAG_RESULT;
+import static o2o.platform.commons.delay.queue.redis.core.constants.DelayQueueRedisConstants.TAG_TOPIC;
 import static o2o.platform.commons.delay.queue.redis.core.redis.RedisLuaUtils.getFetchLuaContent;
 
 import java.time.Duration;
@@ -17,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -25,6 +32,7 @@ import o2o.platform.commons.delay.queue.redis.core.domain.DelayQueueConsumerProc
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionHandler;
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerHandler;
 import o2o.platform.commons.delay.queue.redis.core.message.DelayMessage;
+import o2o.platform.commons.delay.queue.redis.core.monitor.MetricService;
 import o2o.platform.commons.delay.queue.redis.core.properties.ConsumeProperties;
 import o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties;
 import o2o.platform.commons.delay.queue.redis.core.properties.TopicProperties;
@@ -40,6 +48,7 @@ public class DelayQueueConsumer {
     private final RedisOpService redisOpService;
     private final RedisKeyResolver redisKeyResolver;
     private final DelayQueueProperties delayQueueProperties;
+    private final MetricService metricService;
     private final ThreadPoolExecutor consumerThreadExecutor;
     private final Map<String, DelayQueueConsumerHandler> consumeHandlerMap;
     private final Map<String, DelayQueueConsumerExceptionHandler> consumeExceptionHandlerMap;
@@ -56,11 +65,12 @@ public class DelayQueueConsumer {
     private ScheduledThreadPoolExecutor scheduledExecutor;
 
     public DelayQueueConsumer(RedisOpService redisOpService, RedisKeyResolver redisKeyResolver,
-            DelayQueueProperties delayQueueProperties, ThreadPoolExecutor consumerThreadExecutor,
-            DelayQueueConsumerProcessor delayQueueConsumerProcessor) {
+            DelayQueueProperties delayQueueProperties, MetricService metricService,
+            ThreadPoolExecutor consumerThreadExecutor, DelayQueueConsumerProcessor delayQueueConsumerProcessor) {
         this.redisOpService = redisOpService;
         this.redisKeyResolver = redisKeyResolver;
         this.delayQueueProperties = delayQueueProperties;
+        this.metricService = metricService;
         this.consumerThreadExecutor = consumerThreadExecutor;
         this.consumeHandlerMap = delayQueueConsumerProcessor.getConsumerHandlerMap();
         this.consumeExceptionHandlerMap = delayQueueConsumerProcessor.getConsumerExceptionHandlerMap();
@@ -147,13 +157,21 @@ public class DelayQueueConsumer {
         if (delayMessage == null) {
             return;
         }
+        Stopwatch stopwatch = Stopwatch.createStarted();
         try {
             consumeHandlerMap.get(delayQueueProperties.getTopics().get(topic).getConsumerHandlerName())
                     .onMessage(delayMessage);
+
+            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_RESULT, true);
         } catch (Exception e) {
-            consumeExceptionHandlerMap.get(
-                            delayQueueProperties.getTopics().get(topic).getConsumerExceptionHandlerName())
-                    .onException(delayMessage, e);
+            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_RESULT, false);
+            DelayQueueConsumerExceptionHandler exceptionHandler = consumeExceptionHandlerMap.get(
+                    delayQueueProperties.getTopics().get(topic).getConsumerExceptionHandlerName());
+
+            exceptionHandler.onException(delayMessage, e);
+
+            metricService.time(stopwatch.elapsed(MILLISECONDS), METRIC_CONSUMER, TAG_TOPIC, topic, TAG_CONSUMER_RETRY,
+                    exceptionHandler.getClass().getSimpleName(), TAG_RESULT, true);
         }
     }
 
@@ -164,8 +182,8 @@ public class DelayQueueConsumer {
         keys.add(redisKeyResolver.bucketKey(topic));
 
         List<String> messageList = redisOpService.fetch(getFetchLuaContent(), keys, messageId);
-        //已经被其他进程抢到
         if (messageList == null || messageList.size() == 0) {
+            metricService.count(METRIC_CONSUMER, TAG_TOPIC, topic, TAG_CONSUMER_GRAB, false);
             return null;
         }
         String message = messageList.get(0);

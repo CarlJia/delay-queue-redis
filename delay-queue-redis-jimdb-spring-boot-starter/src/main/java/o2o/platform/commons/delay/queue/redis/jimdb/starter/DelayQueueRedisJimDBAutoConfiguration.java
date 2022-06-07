@@ -24,6 +24,7 @@ import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExc
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionRetryHandler;
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerHandler;
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerSkipHandler;
+import o2o.platform.commons.delay.queue.redis.core.monitor.MetricService;
 import o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties;
 import o2o.platform.commons.delay.queue.redis.core.properties.ThreadPoolExecutorProperties;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisKeyResolver;
@@ -50,10 +51,17 @@ public class DelayQueueRedisJimDBAutoConfiguration {
         return new RedisKeyResolver(delayQueueProperties.getAppName(), delayQueueProperties.getEnv());
     }
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Bean
     @ConditionalOnMissingBean
     public RedisOpService redisOpService(Cluster cluster) {
         return new JimDBRedisTemplate(cluster);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MetricService metricService() {
+        return null;
     }
 
 
@@ -71,8 +79,8 @@ public class DelayQueueRedisJimDBAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public DelayMessageProducer p(RedisOpService redisOpService, RedisKeyResolver redisKeyResolver,
-            DelayQueueProperties delayQueueProperties) {
-        return new DelayMessageProducer(redisOpService, redisKeyResolver, delayQueueProperties);
+            DelayQueueProperties delayQueueProperties, MetricService metricService) {
+        return new DelayMessageProducer(redisOpService, redisKeyResolver, delayQueueProperties, metricService);
     }
 
     @Bean
@@ -128,11 +136,9 @@ public class DelayQueueRedisJimDBAutoConfiguration {
     @Bean(initMethod = "start", destroyMethod = "shutdown")
     @ConditionalOnMissingBean
     public DelayQueueConsumer c(RedisOpService redisOpService, RedisKeyResolver redisKeyResolver,
-            DelayQueueProperties delayQueueProperties, ThreadPoolExecutor consumerThreadExecutor,
-            DelayQueueConsumerProcessor delayQueueConsumerProcessor) {
-        return new DelayQueueConsumer(redisOpService, redisKeyResolver, delayQueueProperties, consumerThreadExecutor,
-                delayQueueConsumerProcessor);
+            DelayQueueProperties delayQueueProperties, MetricService metricService,
+            ThreadPoolExecutor consumerThreadExecutor, DelayQueueConsumerProcessor delayQueueConsumerProcessor) {
+        return new DelayQueueConsumer(redisOpService, redisKeyResolver, delayQueueProperties,
+                metricService, consumerThreadExecutor, delayQueueConsumerProcessor);
     }
-
-
 }
