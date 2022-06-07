@@ -84,9 +84,11 @@ public class DelayMessageProducer {
 
     private void checkDelayMessage(DelayMessage delayMessage) {
         checkArgument(delayMessage != null, "延迟消息对象为空");
-        checkArgument(!isNullOrEmpty(delayMessage.getTopic()), "延迟消息Topic为空");
+        String topic = delayMessage.getTopic();
+        checkArgument(!isNullOrEmpty(topic), "延迟消息 Topic 为空");
+        checkArgument(delayQueueProperties.getTopics().containsKey(topic), "延迟消息 Topic 没有配置对应 Consumer 配置");
         checkArgument(delayMessage.getDelay() > 0 && delayMessage.getDelay() < MAX_DELAY_MILLS,
-                "延迟消息delay必须 >0 && < " + ofMillis(MAX_DELAY_MILLS).toDays() + "days");
+                "延迟消息 Delay 必须 > 0 && < " + ofMillis(MAX_DELAY_MILLS).toDays() + " days");
         checkArgument(delayMessage.getPayload() != null, "延迟消息内容不能为空");
     }
 
