@@ -2,6 +2,7 @@ package o2o.platform.commons.delay.queue.redis.jimdb.starter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
@@ -13,6 +14,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.base.CaseFormat;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -27,6 +30,7 @@ import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerSki
 import o2o.platform.commons.delay.queue.redis.core.monitor.MetricService;
 import o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties;
 import o2o.platform.commons.delay.queue.redis.core.properties.ThreadPoolExecutorProperties;
+import o2o.platform.commons.delay.queue.redis.core.properties.TopicProperties;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisKeyResolver;
 import o2o.platform.commons.delay.queue.redis.core.redis.RedisOpService;
 import o2o.platform.commons.delay.queue.redis.core.service.DelayMessageProducer;
@@ -104,7 +108,8 @@ public class DelayQueueRedisJimDBAutoConfiguration {
     @ConditionalOnMissingBean
     public DelayQueueConsumerProcessor injectDelayQueueConsumeHandler(
             List<DelayQueueConsumerHandler> delayQueueConsumerHandlerList,
-            List<DelayQueueConsumerExceptionHandler> consumeExceptionHandlerList) {
+            List<DelayQueueConsumerExceptionHandler> consumeExceptionHandlerList,
+            DelayQueueProperties delayQueueProperties) {
 
         Map<String, DelayQueueConsumerHandler> consumeHandlerMap = delayQueueConsumerHandlerList
                 .stream()
@@ -112,6 +117,19 @@ public class DelayQueueRedisJimDBAutoConfiguration {
                         handler -> CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL,
                                 handler.getClass().getSimpleName()),
                         Function.identity(), (a, b) -> a));
+
+        // 检查每个topic对应的consumerHandlerName是否有消费者
+        Set<String> topicConsumerHandlerListFromProperties =
+                delayQueueProperties.getTopics().values().stream().map(TopicProperties::getConsumerHandlerName)
+                        .collect(Collectors.toSet());
+
+        List<String> hasNoConsumerHandlerList =
+                topicConsumerHandlerListFromProperties.stream()
+                        .filter(handlerName -> !consumeHandlerMap.containsKey(handlerName))
+                        .collect(Collectors.toList());
+        Assert.state(CollectionUtils.isEmpty(hasNoConsumerHandlerList),
+                "consumerHandlerName[" + hasNoConsumerHandlerList + "] has no consumerHandler");
+
 
         Map<String, DelayQueueConsumerExceptionHandler> consumeExceptionHandlerMap = consumeExceptionHandlerList
                 .stream()
