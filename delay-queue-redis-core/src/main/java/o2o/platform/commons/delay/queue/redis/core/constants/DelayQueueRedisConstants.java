@@ -7,7 +7,7 @@ import java.time.Duration;
  * Created on 2022-06-05
  */
 public class DelayQueueRedisConstants {
-    public static final long MAX_DELAY_MILLS = Duration.ofDays(7).toMillis();
+    public static final long MAX_DELAY_MILLS = Duration.ofHours(1).toMillis();
 
     public static final String METRIC_PRODUCER = "delay_queue_redis_produce";
     public static final String METRIC_CONSUMER = "delay_queue_redis_consume";
