@@ -27,6 +27,7 @@ import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExc
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerExceptionRetryHandler;
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerHandler;
 import o2o.platform.commons.delay.queue.redis.core.handler.DelayQueueConsumerSkipHandler;
+import o2o.platform.commons.delay.queue.redis.core.monitor.EmptyMetricService;
 import o2o.platform.commons.delay.queue.redis.core.monitor.MetricService;
 import o2o.platform.commons.delay.queue.redis.core.properties.DelayQueueProperties;
 import o2o.platform.commons.delay.queue.redis.core.properties.ThreadPoolExecutorProperties;
@@ -65,7 +66,7 @@ public class DelayQueueRedisJimDBAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public MetricService metricService() {
-        return null;
+        return new EmptyMetricService();
     }
 
 
